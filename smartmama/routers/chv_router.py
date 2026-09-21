@@ -14,6 +14,7 @@ from smartmama.services import chv_service
 from smartmama.services.attachment_scanner_service import attachment_scanner_service
 from smartmama.security import require_chv, TokenPayload, require_supervisor
 from smartmama.models.chv import CHV
+from jose import jwt
 
 router = APIRouter(
     prefix="/auth/chv",
@@ -48,26 +49,59 @@ def signup(
             detail=str(error)
         )
 
+class CHVLoginResponse(TokenResponse):
+    user: CHVResponse
+    
+    
 @router.post(
     "/login",
-    response_model=TokenResponse,
+    response_model=CHVLoginResponse,
 )
 def login(
-    data: UserLogin,
-    
+    data: UserLogin,    
     db: Session = Depends(get_db)
 ):
     try:
         token = chv_service.login(db, data)
-        return {
-            "access_token":token,
-            "token_type":"bearer"
-        }
     except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(error)
         )
+    user_id = UUID(jwt.get_unverified_claims(token)["sub"])
+    chv = chv_repository.get_chv_profile_by_user_id(db, user_id)
+    if not chv:
+        raise HTTPException(status_code=404, detail="CHV profile not found")
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "chv_id": chv.chv_id,
+            "user_id": chv.user_id,
+            "first_name": chv.user.person.first_name,
+            "last_name": chv.user.person.last_name,
+            "email": chv.user.email,
+            "phone_number": chv.user.person.phone_number,
+            "certificate_status": chv.certificate_status,
+            "created_at": chv.created_at,
+        },
+    }
+
+@router.get("/current", response_model=CHVResponse)
+def get_chv_profile(
+    current_chv: CHV = Depends(require_chv)
+):
+    return {
+        "chv_id": current_chv.chv_id,
+        "user_id": current_chv.user_id,
+        "first_name": current_chv.user.person.first_name,
+        "last_name": current_chv.user.person.last_name,
+        "email": current_chv.user.email,
+        "phone_number":current_chv.user.person.phone_number,
+        "certificate_status": current_chv.certificate_status,
+        "created_at": current_chv.created_at,
+    }
        
 @router.get("/{chv_id}", response_model=CHVResponse)
 def get_chv_by_id(
@@ -120,21 +154,6 @@ def approve_cert(chv_id: UUID, db: Session = Depends(get_db),
         
     }
     
-@router.get("/current", response_model=CHVResponse)
-def get_chv_profile(
-    current_chv: CHV = Depends(require_chv)
-):
-    return {
-        "chv_id": current_chv.chv_id,
-        "user_id": current_chv.user_id,
-        "first_name": current_chv.user.person.first_name,
-        "last_name": current_chv.user.person.last_name,
-        "email": current_chv.user.email,
-        "phone_number":current_chv.user.person.phone_number,
-        "certificate_status": current_chv.certificate_status,
-        "created_at": current_chv.created_at,
-    }
-
 @router.patch("/profile", response_model=CHVResponse)
 def update_chv_profile(
     data: CHVUpdateProfile, 
