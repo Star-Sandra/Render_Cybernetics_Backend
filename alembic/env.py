@@ -241,7 +241,8 @@ config = context.config
 
 CLOUD_DATABASE_URL = "postgresql+psycopg2://render_cybernetics_backend_user:UfUCHmCLdzO0Fsp954Zuyq5qEX8RRo83@://render.com"
 
-database_url = os.getenv("DATABASE_URL") or CLOUD_DATABASE_URL
+# database_url = os.getenv("DATABASE_URL") or CLOUD_DATABASE_URL
+database_url = CLOUD_DATABASE_URL
 database_url = str(database_url).replace(" ", "")
 
 if database_url.startswith("postgres://"):
