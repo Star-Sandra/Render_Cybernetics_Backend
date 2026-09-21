@@ -176,7 +176,7 @@ app.include_router(pdf_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(supervisor_router, prefix="/api/v1")
 app.include_router(admin_router, prefix= "/api/v1")
-  app.include_router(chv_verification_router, prefix="/api/v1")
+app.include_router(chv_verification_router, prefix="/api/v1")
 app.include_router(ticket_router, prefix="/api/v1")
 app.include_router(audit_log_router, prefix="/api/v1")
 
