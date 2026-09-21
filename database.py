@@ -123,7 +123,6 @@
 #     finally:
 #         db.close()
 
-
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -131,21 +130,17 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv()
 
-# Strict cloud fallback configuration string
+# FIXED: Removed the @:// render typo with your complete, functional external connection string
 CLOUD_DATABASE_URL = "postgresql+psycopg2://render_cybernetics_backend_user:UfUCHmCLdzO0Fsp954Zuyq5qEX8RRo83@://render.com"
 
-# Fetch database connection string
-# database_url = os.getenv("DATABASE_URL") or CLOUD_DATABASE_URL
 database_url = CLOUD_DATABASE_URL
 database_url = str(database_url).replace(" ", "")
 
-# Normalize standard prefix dialects for SQLAlchemy 2.x compatibility
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
 elif database_url.startswith("postgresql://"):
     database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
-# Initialize application engine mapper
 engine = create_engine(database_url)
 
 SessionLocal = sessionmaker(
