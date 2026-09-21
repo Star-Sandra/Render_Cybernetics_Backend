@@ -15,7 +15,8 @@ from smartmama.services import sms_service
 
 
 STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage", "assessments")
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+# BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+BASE_URL = os.getenv("BASE_URL", "https://render-cybernetics-backend.onrender.com")
 
 
 def _ensure_storage():
