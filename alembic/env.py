@@ -1,15 +1,14 @@
-import os
-from dotenv import load_dotenv
-from database import Base
-from smartmama import models  
-load_dotenv()
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
 from alembic import context
+from sqlalchemy import engine_from_config, pool
+from database import Base, database_url
+from smartmama import models  # noqa: F401
 
 config = context.config
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
+
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
 CLOUD_DATABASE_URL = "postgresql+psycopg2://render_cybernetics_backend_user:UfUCHmCLdzO0Fsp954Zuyq5qEX8RRo83@://render.com"
 
