@@ -36,7 +36,7 @@ def get_my_visit_history(
     chv_id = current_chv.chv_id
     return get_chv_visit_history(db, chv_id)
 
-
+@router.get("/mother/{mother_id}", response_model=list[VisitLogResponse])
 @router.get("/mother_history/{mother_id}", response_model=list[VisitLogResponse])
 def get_mother_history(
     mother_id: UUID,
