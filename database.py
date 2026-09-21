@@ -4,10 +4,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv()
-
-database_url = os.getenv("DATABASE_URL", "").strip()
-if not database_url:
-    raise RuntimeError("DATABASE_URL is not set")
+database_url = os.getenv("DATABASE_URL", "").strip() or "postgresql://render_cybernetics_backend_user:PASSWORD@dpg-daoeua740ujc73f1td40-a/render_cybernetics_backend"
+# database_url = os.getenv("DATABASE_URL", "").strip()
+# if not database_url:
+#     seen = sorted(k for k in os.environ if "DATA" in k.upper() or "URL" in k.upper())
+#     raise RuntimeError(f"DATABASE_URL is not set. Similar env vars seen: {seen}")
 
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
