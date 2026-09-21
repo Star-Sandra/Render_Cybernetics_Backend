@@ -65,10 +65,11 @@ if database_url.startswith("postgres://"):
         "postgres://", "postgresql://", 1
     )
 
-engine = create_engine(
-    database_url,
-    pool_pre_ping=True,
-)
+# engine = create_engine(
+#     database_url,
+#     pool_pre_ping=True,
+# )
+engine = create_engine(database_url)
 
 SessionLocal = sessionmaker(
     autocommit=False,
